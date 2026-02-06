@@ -1,5 +1,5 @@
-#include <SDL2/SDL.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
@@ -7,13 +7,13 @@
 
 /* ---------------------------------------------------------------------------------------------------- */
 
-static size_t file_size(FILE *f);
+static long file_size(FILE *f);
 
 /* ---------------------------------------------------------------------------------------------------- */
 
 void init_chip8(struct chip8 *chip8)
 {
-	const uint8_t chip8_fonts[] =
+	const uint8_t chip8_fonts[16 * 5] =
 	{
 		/*
 		0xF0, // 0b11110000, // ****
@@ -51,23 +51,23 @@ void init_chip8(struct chip8 *chip8)
 void load_chip8(struct chip8 *chip8, const char *rom_name)
 {
 	FILE *f;
-	size_t rom_size;
-	size_t max_size;
+	long rom_size;
+	long max_size;
 
 	f = fopen(rom_name, "rb");
 
 	if (!f)
 	{
-		SDL_Log("ROM file \"%s\": %s\n", rom_name, strerror(errno));
+		fprintf(stderr, "ROM file \"%s\": %s\n", rom_name, strerror(errno));
 		exit(1);
 	}
 
 	rom_size = file_size(f);
 	max_size = sizeof(chip8->memory) - CHIP8_PROGRAM_LOAD_ADDRESS;
 
-	if (rom_size > max_size)
+	if (rom_size > max_size) // assert(CHIP8_PROGRAM_LOAD_ADDRESS + rom_size < CHIP8_MEMORY_SIZE);
 	{
-		SDL_Log("ROM size: %zu, Max size: %zu\n", rom_size, max_size);
+		fprintf(stderr, "ROM size: %zu, Max size: %zu\n", rom_size, max_size);
 		exit(1);
 	}
 
@@ -78,13 +78,21 @@ void load_chip8(struct chip8 *chip8, const char *rom_name)
 
 /* ---------------------------------------------------------------------------------------------------- */
 
-static size_t file_size(FILE *f)
+static long file_size(FILE *f)
 {
-	size_t size;
+	int ret = -1;
+	long size;
+
+	if (!f)
+	{
+		goto end;
+	}
 
 	fseek(f, 0, SEEK_END);
 	size = ftell(f);
 	fseek(f, 0, SEEK_SET);
 
-	return size;
+	ret = size;
+end:
+	return ret;
 }

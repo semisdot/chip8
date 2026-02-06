@@ -4,10 +4,18 @@
 
 /* ---------------------------------------------------------------------------------------------------- */
 
-static int keyboard_find_map(const uint8_t *keyboard_map, int key)
+static int keyboard_find_map(int key)
 {
 	int vkey = -1;
 	int i;
+
+	static const uint8_t keyboard_map[CHIP8_KEYS] =
+	{
+		SDL_SCANCODE_1, SDL_SCANCODE_2, SDL_SCANCODE_3, SDL_SCANCODE_4,
+		SDL_SCANCODE_Q, SDL_SCANCODE_W, SDL_SCANCODE_E, SDL_SCANCODE_R,
+		SDL_SCANCODE_A, SDL_SCANCODE_S, SDL_SCANCODE_D, SDL_SCANCODE_F,
+		SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V
+	};
 
 	for (i = 0; i < CHIP8_KEYS; ++i)
 	{
@@ -22,7 +30,7 @@ static int keyboard_find_map(const uint8_t *keyboard_map, int key)
 
 /* ---------------------------------------------------------------------------------------------------- */
 
-void input(struct chip8 *chip8, const uint8_t *keyboard_map)
+void input(struct chip8 *chip8)
 {
 	char key;
 	int vkey; // virtual key
@@ -41,7 +49,7 @@ void input(struct chip8 *chip8, const uint8_t *keyboard_map)
 				if (event.key.repeat == 0)
 				{
 					key = event.key.keysym.scancode;
-					vkey = keyboard_find_map(keyboard_map, key);
+					vkey = keyboard_find_map(key);
 
 					if (vkey != -1)
 					{
@@ -56,7 +64,7 @@ void input(struct chip8 *chip8, const uint8_t *keyboard_map)
 				if (event.key.repeat == 0)
 				{
 					key = event.key.keysym.scancode;
-					vkey = keyboard_find_map(keyboard_map, key);
+					vkey = keyboard_find_map(key);
 
 					if (vkey != -1)
 					{

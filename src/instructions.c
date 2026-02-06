@@ -173,7 +173,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 						default:
 
-							// fprintf(stderr, "Unimplemented or invalid instruction: %x\n", instruction);
+							fprintf(stderr, "Unimplemented or invalid instruction: %x\n", instruction);
 							break;
 					}
 
@@ -238,7 +238,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 						default:
 
-							// fprintf(stderr, "Unimplemented or invalid instruction: %x\n", instruction);
+							fprintf(stderr, "Unimplemented or invalid instruction: %x\n", instruction);
 							break;
 					}
 
@@ -253,10 +253,12 @@ void chip8_instruction_exec(struct chip8 *chip8)
 							chip8->registers.V[x] = chip8->registers.DT;
 							break;
 
+#if 0
 						case 0x0a: // Fx0A - LD Vx, K
 
-							// chip8->registers.V[x] = chip8_wait_for_key_press();
+							// chip8->registers.V[x] = wait_for_key_press();
 							break;
+#endif
 
 						case 0x15: // Fx15 - LD DT, Vx
 
@@ -312,14 +314,14 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 						default:
 
-							// fprintf(stderr, "Unimplemented or invalid instruction: %x\n", instruction);
+							fprintf(stderr, "Unimplemented or invalid instruction: %x\n", instruction);
 							break;
 					}
 
 					break; // case 0xf000
 
 				default:
-					// fprintf(stderr, "Unimplemented or invalid instruction: %x\n", instruction);
+					fprintf(stderr, "Unimplemented or invalid instruction: %x\n", instruction);
 					break;
 			}
 
