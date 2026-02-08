@@ -15,9 +15,9 @@ bool display_draw_sprite(struct chip8_display *display, int x, int y, const uint
 {
 	int i, j;
 	int sp_x, sp_y; // sprite pixel
-	bool pixel_erased;
+	bool pixel_collision;
 
-	pixel_erased = false;
+	pixel_collision = false;
 
 	for (i = 0; i < num; ++i)
 	{
@@ -30,7 +30,7 @@ bool display_draw_sprite(struct chip8_display *display, int x, int y, const uint
 
 				if (display->pixels[sp_y][sp_x])
 				{
-					pixel_erased = true;
+					pixel_collision = true;
 				}
 
 				display->pixels[sp_y][sp_x] ^= true;
@@ -38,5 +38,5 @@ bool display_draw_sprite(struct chip8_display *display, int x, int y, const uint
 		}
 	}
 
-	return pixel_erased;
+	return pixel_collision;
 }

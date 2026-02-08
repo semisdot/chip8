@@ -13,7 +13,7 @@ static long file_size(FILE *f);
 
 void init_chip8(struct chip8 *chip8)
 {
-	const uint8_t chip8_fonts[16 * 5] =
+	const uint8_t chip8_sprites[16 * 5] =
 	{
 		/*
 		0xF0, // 0b11110000, // ****
@@ -43,7 +43,7 @@ void init_chip8(struct chip8 *chip8)
 
 	memset(chip8, 0, sizeof(*chip8));
 
-	memcpy(&chip8->memory[CHIP8_FONT_LOAD_ADDRESS], chip8_fonts, sizeof(chip8_fonts));
+	memcpy(&chip8->memory[CHIP8_FONT_LOAD_ADDRESS], chip8_sprites, sizeof(chip8_sprites));
 
 	chip8->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
 }
@@ -80,8 +80,7 @@ void load_chip8(struct chip8 *chip8, const char *rom_name)
 
 static long file_size(FILE *f)
 {
-	int ret = -1;
-	long size;
+	long size = -1;
 
 	if (!f)
 	{
@@ -92,7 +91,6 @@ static long file_size(FILE *f)
 	size = ftell(f);
 	fseek(f, 0, SEEK_SET);
 
-	ret = size;
 end:
-	return ret;
+	return size;
 }

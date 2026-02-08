@@ -9,7 +9,7 @@ static int keyboard_find_map(int key)
 	int vkey = -1;
 	int i;
 
-	static const uint8_t keyboard_map[CHIP8_KEYS] =
+	const uint8_t keyboard_map[CHIP8_KEYS] =
 	{
 		SDL_SCANCODE_1, SDL_SCANCODE_2, SDL_SCANCODE_3, SDL_SCANCODE_4,
 		SDL_SCANCODE_Q, SDL_SCANCODE_W, SDL_SCANCODE_E, SDL_SCANCODE_R,
