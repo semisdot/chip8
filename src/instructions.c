@@ -68,7 +68,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 					chip8->registers.PC = nnn;
 
-					printf("Jump to location nnn (%03x)\n", nnn);
+					printf("Jump to location nnn (0x%03x)\n", nnn);
 					break;
 
 				case 0x2000: // 2nnn - CALL addr
@@ -86,7 +86,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 						chip8->registers.PC += 2;
 					}
 
-					printf("Skip next instruction if Vx == kk\n");
+					printf("Skip next instruction if V[0x%x] (0x%02x) == 0x%02x\n", x, chip8->registers.V[x], kk);
 					break;
 
 				case 0x4000: // 4xkk - SNE Vx, byte
@@ -96,7 +96,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 						chip8->registers.PC += 2;
 					}
 
-					printf("Skip next instruction if Vx != kk\n");
+					printf("Skip next instruction if V[0x%x] (0x%02x) != 0x%02x\n", x, chip8->registers.V[x], kk);
 					break;
 
 				case 0x5000: // 5xy0 - SE Vx, Vy
@@ -106,7 +106,8 @@ void chip8_instruction_exec(struct chip8 *chip8)
 						chip8->registers.PC += 2;
 					}
 
-					printf("Skip next instruction if Vx == Vy\n");
+					printf("Skip next instruction if V[0x%x] (0x%02x) == V[0x%x] (0x%02x)\n", x, chip8->registers.V[x],
+																							  y, chip8->registers.V[y]);
 					break;
 
 				case 0x6000: // 6xkk - LD Vx, byte
@@ -120,7 +121,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 					chip8->registers.V[x] += kk;
 
-					printf("Set Vx += kk\n");
+					printf("Set V[0x%x] += kk (0x%02x)\n", x, kk);
 					break;
 
 				case 0x8000: // 8***
@@ -131,72 +132,78 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 							chip8->registers.V[x] = chip8->registers.V[y];
 
-							printf("Set Vx = Vy\n");
+							printf("Set V[0x%x] = V[0x%x] (0x%02x)\n", x, y, chip8->registers.V[y]);
 							break;
 
 						case 0x01: // 8xy1 - OR Vx, Vy
 
-							chip8->registers.V[x] |= chip8->registers.V[y];
+							printf("Set V[0x%x] (0x%02x) |= V[0x%x] (0x%02x)\n", x, chip8->registers.V[x],
+																				 y, chip8->registers.V[y]);
 
-							printf("Set Vx |= Vy\n");
+							chip8->registers.V[x] |= chip8->registers.V[y];
 							break;
 
 						case 0x02: // 8xy2 - AND Vx, Vy
 
-							chip8->registers.V[x] &= chip8->registers.V[y];
+							printf("Set V[0x%x] (0x%02x) &= V[0x%x] (0x%02x)\n", x, chip8->registers.V[x],
+																				 y, chip8->registers.V[y]);
 
-							printf("Set Vx &= Vy\n");
+							chip8->registers.V[x] &= chip8->registers.V[y];
 							break;
 
 						case 0x03: // 8xy3 - XOR Vx, Vy
 
-							chip8->registers.V[x] ^= chip8->registers.V[y];
+							printf("Set V[0x%x] (0x%02x) ^= V[0x%x] (0x%02x)\n", x, chip8->registers.V[x],
+																				 y, chip8->registers.V[y]);
 
-							printf("Set Vx ^= Vy\n");
+							chip8->registers.V[x] ^= chip8->registers.V[y];
 							break;
 
 						case 0x04: // 8xy4 - ADD Vx, Vy
 							{
 								uint16_t tmp;
-								tmp = chip8->registers.V[x] + chip8->registers.V[y];
 
-								chip8->registers.V[0x0f] = tmp > 0xff;
+								tmp = chip8->registers.V[x] + chip8->registers.V[y];
+								printf("Set V[0x%x] (0x%02x) += V[0x%x] (0x%02x), set VF = carry\n", x, chip8->registers.V[x],
+																									 y, chip8->registers.V[y]);
+
+								chip8->registers.V[0xf] = tmp > 0xff; // 255
 								chip8->registers.V[x] = tmp;
 							}
 
-							printf("Set Vx += Vy, set VF = carry\n");
 							break;
 
 						case 0x05: // 8xy5 - SUB Vx, Vy
 
-							chip8->registers.V[0x0f] = chip8->registers.V[x] > chip8->registers.V[y];
-							chip8->registers.V[x] -= chip8->registers.V[y];
+							chip8->registers.V[0xf] = chip8->registers.V[x] > chip8->registers.V[y];
 
-							printf("Set Vx -= Vy, set VF = NOT borrow\n");
+							printf("Set V[0x%x] (0x%02x) -= V[0x%x] (0x%02x), set VF = NOT borrow\n", x, chip8->registers.V[x],
+																									  y, chip8->registers.V[y]);
+							chip8->registers.V[x] -= chip8->registers.V[y];
 							break;
 
 						case 0x06: // 8xy6 - SHR Vx {, Vy}
 
-							chip8->registers.V[0x0f] = chip8->registers.V[x] & 0x01 /*0b00000001*/; // LSB
-							chip8->registers.V[x] /= 2;
+							chip8->registers.V[0xf] = chip8->registers.V[x] & 0x01 /*0b00000001*/; // LSB
+							printf("Set VF = V[0x%x] (0x%02x) SHR 1\n", x, chip8->registers.V[x]);
 
-							printf("Set VF = Vx SHR 1\n");
+							chip8->registers.V[x] /= 2;
 							break;
 
 						case 0x07: // 8xy7 - SUBN Vx, Vy
 
-							chip8->registers.V[0x0f] = chip8->registers.V[y] > chip8->registers.V[x];
-							chip8->registers.V[x] = chip8->registers.V[y] - chip8->registers.V[x];
+							chip8->registers.V[0xf] = chip8->registers.V[y] > chip8->registers.V[x];
+							printf("Set V[0x%x] = V[0x%x] (0x%02x) - V[0x%x] (0x%02x), set VF = NOT borrow\n", x, y, chip8->registers.V[y], x, chip8->registers.V[x]);
 
-							printf("Set Vx = Vy - Vx, set VF = NOT borrow\n");
+							chip8->registers.V[x] = chip8->registers.V[y] - chip8->registers.V[x];
 							break;
 
 						case 0x0E: // 8xyE - SHL Vx {, Vy}
 
-							chip8->registers.V[0x0f] = chip8->registers.V[x] & 0x80 /*0b10000000*/; // MSB
-							chip8->registers.V[x] *= 2;
+							chip8->registers.V[0xf] = chip8->registers.V[x] & 0x80 /*0b10000000*/; // MSB
+							printf("Set VF = V[0x%x] (0x%02x) SHL 1\n", x, chip8->registers.V[x]);
 
-							printf("Set Vx = Vx SHL 1, Set Vx *= Vx\n");
+							chip8->registers.V[x] *= 2;
 							break;
 
 						default:
@@ -226,7 +233,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 				case 0xb000: // Bnnn - JP V0, addr
 
-					chip8->registers.PC = nnn + chip8->registers.V[0x00];
+					chip8->registers.PC = nnn + chip8->registers.V[0x0];
 
 					printf("Jump to location nnn + V0\n");
 					break;
@@ -243,13 +250,13 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 				case 0xd000: // Dxyn - DRW Vx, Vy, nibble
 
-					chip8->registers.V[0x0f] = display_draw_sprite(&chip8->display,
+					chip8->registers.V[0xf] = display_draw_sprite(&chip8->display,
 											   					   chip8->registers.V[x],
 											   					   chip8->registers.V[y],
 											   					   &chip8->memory[chip8->registers.I],
 											   					   n);
 
-					printf("Display 0x%x-byte sprite starting at location I (0x%03x) at (Vx (0x%02x), Vy (0x%02x)), set VF = collision\n", n, chip8->registers.I, chip8->registers.V[x], chip8->registers.V[y]);
+					printf("Display 0x%x-byte sprite starting at location I (0x%03x) at (V[0x%x] (0x%02x), V[0x%x] (0x%02x)), set VF = collision\n", n, chip8->registers.I, x, chip8->registers.V[x], y, chip8->registers.V[y]);
 
 					// draw_flag = true // use ?
 					break;
