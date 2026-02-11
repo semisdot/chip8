@@ -44,8 +44,6 @@ void init_chip8(struct chip8 *chip8)
 	memset(chip8, 0, sizeof(*chip8));
 
 	memcpy(&chip8->memory[CHIP8_FONT_LOAD_ADDRESS], chip8_sprites, sizeof(chip8_sprites));
-
-	chip8->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
 }
 
 void load_chip8(struct chip8 *chip8, const char *rom_name)
@@ -74,6 +72,8 @@ void load_chip8(struct chip8 *chip8, const char *rom_name)
 	fread(&chip8->memory[CHIP8_PROGRAM_LOAD_ADDRESS], sizeof(chip8->memory[0]), rom_size, f);
 
 	fclose(f);
+
+	chip8->registers.PC = CHIP8_PROGRAM_LOAD_ADDRESS;
 }
 
 /* ---------------------------------------------------------------------------------------------------- */

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "stack.h"
 #include "display.h"
@@ -200,7 +201,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 						case 0x0E: // 8xyE - SHL Vx {, Vy}
 
-							chip8->registers.V[0xf] = chip8->registers.V[x] & 0x80 /*0b10000000*/; // MSB
+							chip8->registers.V[0xf] = (chip8->registers.V[x] & 0x80 /*0b10000000*/) >> 7; // MSB
 							printf("Set VF = V[0x%x] (0x%02x) SHL 1\n", x, chip8->registers.V[x]);
 
 							chip8->registers.V[x] *= 2;
@@ -221,7 +222,8 @@ void chip8_instruction_exec(struct chip8 *chip8)
 						chip8->registers.PC += 2;
 					}
 
-					printf("Skip next instruction if Vx != Vy\n");
+					printf("Skip next instruction if V[0x%x] (0x%02x) != V[0x%x] (0x%02x)\n", x, chip8->registers.V[x],
+																							  y, chip8->registers.V[y]);
 					break;
 
 				case 0xa000: // Annn - LD I, addr
@@ -235,15 +237,17 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 					chip8->registers.PC = nnn + chip8->registers.V[0x0];
 
-					printf("Jump to location nnn + V0\n");
+					printf("Jump to location nnn (0x%03x) + V0 (0x%02x)\n", nnn, chip8->registers.V[0x0]);
 					break;
 
-				case 0xc000: // Cxkk - RND Vx, byte // 0xC000 ?! UPPERCASE
+				case 0xc000: // Cxkk - RND Vx, byte
 					{
-						int rand_byte = rand() % 256; // [0, 255]
+						int rand_byte;
+
+						rand_byte = rand() % 256; // [0, 255]
 						chip8->registers.V[x] = rand_byte & kk;
 
-						printf("Set Vx = random byte & kk\n");
+						printf("Set V[0x%x] = random byte & kk (0x%02x)\n", x, kk);
 					}
 
 					break;
@@ -272,7 +276,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 								chip8->registers.PC += 2;
 							}
 
-							printf("Skip next instruction if key with the value of Vx is pressed\n");
+							printf("Skip next instruction if key with the value of V[0x%x] (0x%02x) is pressed\n", x, chip8->registers.V[x]);
 							break;
 
 						case 0xa1: // ExA1 - SKNP Vx
@@ -282,7 +286,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 								chip8->registers.PC += 2;
 							}
 
-							printf("Skip next instruction if key with the value of Vx is not pressed\n");
+							printf("Skip next instruction if key with the value of V[0x%x] (0x%02x) is not pressed\n", x, chip8->registers.V[x]);
 							break;
 
 						default:
@@ -301,44 +305,60 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 							chip8->registers.V[x] = chip8->registers.DT;
 
-							printf("Set Vx = delay timer value\n");
+							printf("Set V[0x%x] = delay timer (0x%02x) value\n", x, chip8->registers.DT);
 							break;
 
-#if 0
 						case 0x0a: // Fx0A - LD Vx, K
+							{
+								bool any_key_pressed = false;
+								int i;
 
-							// chip8->registers.V[x] = wait_for_key_press();
+								for (i = 0; i < CHIP8_KEYS; ++i)
+								{
+									if (chip8->keypad[i])
+									{
+										chip8->registers.V[x] = i;
+										any_key_pressed = true;
 
-							printf("Wait for a key press, store the value of the key in Vx\n");
+										break;
+									}
+								}
+
+								if (!any_key_pressed)
+								{
+									chip8->registers.PC -= 2; 
+								}
+							}
+
+							printf("Wait for a key press, store the value of the key in V[0x%x] (0x%02x)\n", x, chip8->registers.V[x]);
 							break;
-#endif
 
 						case 0x15: // Fx15 - LD DT, Vx
 
 							chip8->registers.DT = chip8->registers.V[x];
 
-							printf("Set delay timer = Vx\n");
+							printf("Set delay timer = V[0x%x] (0x%02x)\n", x, chip8->registers.V[x]);
 							break;
 
 						case 0x18: // Fx18 - LD ST, Vx
 
 							chip8->registers.ST = chip8->registers.V[x];
 
-							printf("Set sound timer = Vx\n");
+							printf("Set sound timer = V[0x%x] (0x%02x)\n", x, chip8->registers.V[x]);
 							break;
 
 						case 0x1E: // Fx1E - ADD I, Vx
 
 							chip8->registers.I += chip8->registers.V[x];
 
-							printf("Set I += Vx\n");
+							printf("Set I (0x%03x) += V[0x%x] (0x%02x)\n", chip8->registers.I, x, chip8->registers.V[x]);
 							break;
 
 						case 0x29: // Fx29 - LD F, Vx
 
 							chip8->registers.I = chip8->registers.V[x] * 5 /*offset*/;
 
-							printf("Set I = location of sprite for digit Vx\n");
+							printf("Set I = location of sprite (0x%03x) for digit V[0x%x]\n", chip8->registers.V[x] * 5, x);
 							break;
 
 						case 0x33: // Fx33 - LD B, Vx
@@ -347,7 +367,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 							chip8->memory[chip8->registers.I + 1] = chip8->registers.V[x] / 10 % 10; // tens digit
 							chip8->memory[chip8->registers.I + 2] = chip8->registers.V[x] % 10;		 // ones digit
 
-							printf("Store BCD representation of Vx in memory locations I, I + 1, and I + 2\n");
+							printf("Store BCD representation of V[0x%x] (0x%02x) in memory locations I (0x%03x), I + 1, and I + 2\n", x, chip8->registers.V[x], chip8->registers.I);
 							break;
 
 						case 0x55: // Fx55 - LD [I], Vx
@@ -360,7 +380,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 								}
 							}
 
-							printf("Store registers V0 through Vx in memory starting at location I\n");
+							printf("Store registers V0 through V[0x%x] in memory starting at location I (0x%03x)\n", x, chip8->registers.I);
 							break;
 
 						case 0x65: // Fx65 - LD Vx, [I]
@@ -373,7 +393,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 								}
 							}
 
-							printf("Read registers V0 through Vx from memory starting at location I\n");
+							printf("Read registers V0 through V[0x%x] from memory starting at location I (0x%03x)\n", x, chip8->registers.I);
 							break;
 
 						default:
