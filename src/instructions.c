@@ -58,7 +58,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 			chip8->registers.PC = stack_pop(chip8);
 
-			printf("Return from a subroutine (%u) to address (0x%03x)\n", chip8->registers.SP + 1,
+			printf("Return from a subroutine (%u) to address (0x%04x)\n", chip8->registers.SP + 1,
 																		  chip8->stack[chip8->registers.SP]);
 			break;
 
@@ -70,7 +70,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 					chip8->registers.PC = nnn;
 
-					printf("Jump to location nnn (0x%03x)\n", nnn);
+					printf("Jump to location nnn (0x%04x)\n", nnn);
 					break;
 
 				case 0x2000: // 2nnn - CALL addr
@@ -78,7 +78,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 					stack_push(chip8, chip8->registers.PC);
 					chip8->registers.PC = nnn;
 
-					printf("Call subroutine (%u) at nnn (0x%03x)\n", chip8->registers.SP, nnn);
+					printf("Call subroutine (%u) at nnn (0x%04x)\n", chip8->registers.SP, nnn);
 					break;
 
 				case 0x3000: // 3xkk - SE Vx, byte
@@ -231,14 +231,14 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 					chip8->registers.I = nnn;
 
-					printf("Set I = nnn (0x%03x)\n", nnn);
+					printf("Set I = nnn (0x%04x)\n", nnn);
 					break;
 
 				case 0xb000: // Bnnn - JP V0, addr
 
 					chip8->registers.PC = nnn + chip8->registers.V[0x0];
 
-					printf("Jump to location nnn (0x%03x) + V0 (0x%02x)\n", nnn, chip8->registers.V[0x0]);
+					printf("Jump to location nnn (0x%04x) + V0 (0x%02x)\n", nnn, chip8->registers.V[0x0]);
 					break;
 
 				case 0xc000: // Cxkk - RND Vx, byte
@@ -261,7 +261,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 											   					   &chip8->memory[chip8->registers.I],
 											   					   n);
 
-					printf("Display 0x%x-byte sprite starting at location I (0x%03x) at (V[0x%x] (0x%02x), V[0x%x] (0x%02x)), set VF = collision\n", n, chip8->registers.I, x, chip8->registers.V[x], y, chip8->registers.V[y]);
+					printf("Display 0x%x-byte sprite starting at location I (0x%04x) at (V[0x%x] (0x%02x), V[0x%x] (0x%02x)), set VF = collision\n", n, chip8->registers.I, x, chip8->registers.V[x], y, chip8->registers.V[y]);
 
 					// draw_flag = true // use ?
 					break;
@@ -352,14 +352,14 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 							chip8->registers.I += chip8->registers.V[x];
 
-							printf("Set I (0x%03x) += V[0x%x] (0x%02x)\n", chip8->registers.I, x, chip8->registers.V[x]);
+							printf("Set I (0x%04x) += V[0x%x] (0x%02x)\n", chip8->registers.I, x, chip8->registers.V[x]);
 							break;
 
 						case 0x29: // Fx29 - LD F, Vx
 
 							chip8->registers.I = chip8->registers.V[x] * 5 /*offset*/;
 
-							printf("Set I = location of sprite (0x%03x) for digit V[0x%x]\n", chip8->registers.V[x] * 5, x);
+							printf("Set I = location of sprite (0x%04x) for digit V[0x%x]\n", chip8->registers.V[x] * 5, x);
 							break;
 
 						case 0x33: // Fx33 - LD B, Vx
@@ -368,7 +368,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 							chip8->memory[chip8->registers.I + 1] = chip8->registers.V[x] / 10 % 10; // tens digit
 							chip8->memory[chip8->registers.I + 2] = chip8->registers.V[x] % 10;		 // ones digit
 
-							printf("Store BCD representation of V[0x%x] (0x%02x) in memory locations I (0x%03x), I + 1, and I + 2\n", x, chip8->registers.V[x], chip8->registers.I);
+							printf("Store BCD representation of V[0x%x] (0x%02x) in memory locations I (0x%04x), I + 1, and I + 2\n", x, chip8->registers.V[x], chip8->registers.I);
 							break;
 
 						case 0x55: // Fx55 - LD [I], Vx
@@ -381,7 +381,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 								}
 							}
 
-							printf("Store registers V0 through V[0x%x] in memory starting at location I (0x%03x)\n", x, chip8->registers.I);
+							printf("Store registers V0 through V[0x%x] in memory starting at location I (0x%04x)\n", x, chip8->registers.I);
 							break;
 
 						case 0x65: // Fx65 - LD Vx, [I]
@@ -394,7 +394,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 								}
 							}
 
-							printf("Read registers V0 through V[0x%x] from memory starting at location I (0x%03x)\n", x, chip8->registers.I);
+							printf("Read registers V0 through V[0x%x] from memory starting at location I (0x%04x)\n", x, chip8->registers.I);
 							break;
 
 						default:
