@@ -58,7 +58,8 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 			chip8->registers.PC = stack_pop(chip8);
 
-			printf("Return from a subroutine to address (0x%03x)\n", chip8->stack[chip8->registers.SP]);
+			printf("Return from a subroutine (%u) to address (0x%03x)\n", chip8->registers.SP + 1,
+																		  chip8->stack[chip8->registers.SP]);
 			break;
 
 		default:
@@ -77,7 +78,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 					stack_push(chip8, chip8->registers.PC);
 					chip8->registers.PC = nnn;
 
-					printf("Call subroutine at nnn (0x%03x)\n", nnn);
+					printf("Call subroutine (%u) at nnn (0x%03x)\n", chip8->registers.SP, nnn);
 					break;
 
 				case 0x3000: // 3xkk - SE Vx, byte

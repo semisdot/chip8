@@ -60,7 +60,7 @@ bin: $(BIN)
 
 .PHONY: run
 run: build
-	@./$(BIN)
+	@./$(BIN) Stack.ch8
 
 .PHONY: clean
 clean:
