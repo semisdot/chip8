@@ -54,6 +54,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 		case 0x00e0: // 00E0 - CLS
 
 			display_clear(&chip8->display);
+			g_draw = true;
 
 			printf("Clear the display\n");
 			break;

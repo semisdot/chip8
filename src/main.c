@@ -69,6 +69,8 @@ int main(int argc, char **argv)
 		if (g_draw)
 		{
 			draw(sdl.renderer, &chip8.display);
+
+			g_draw = false;
 		}
 
 		update_timers(&chip8);
