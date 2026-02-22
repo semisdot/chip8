@@ -9,10 +9,14 @@
 
 /* ---------------------------------------------------------------------------------------------------- */
 
+extern int g_draw;
+
+/* ---------------------------------------------------------------------------------------------------- */
+
 static uint16_t memory_get_instruction(struct chip8 *chip8)
 {
-	uint8_t byte1, byte2;
 	uint16_t instruction;
+	uint8_t byte1, byte2;
 
 	byte1 = chip8->memory[chip8->registers.PC];
 	byte2 = chip8->memory[chip8->registers.PC + 1];
@@ -263,7 +267,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 					printf("Display 0x%x-byte sprite starting at location I (0x%04x) at (V[0x%x] (0x%02x), V[0x%x] (0x%02x)), set VF = collision\n", n, chip8->registers.I, x, chip8->registers.V[x], y, chip8->registers.V[y]);
 
-					// draw_flag = true // use ?
+					g_draw = true;
 					break;
 
 				case 0xe000: // E***

@@ -42,7 +42,6 @@ void init_chip8(struct chip8 *chip8)
 	};
 
 	memset(chip8, 0, sizeof(*chip8));
-
 	memcpy(&chip8->memory[CHIP8_FONT_LOAD_ADDRESS], chip8_sprites, sizeof(chip8_sprites));
 }
 
