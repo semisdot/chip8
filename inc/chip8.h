@@ -49,6 +49,7 @@ struct chip8
 	uint16_t				stack[CHIP8_STACK_SIZE];
 	struct chip8_registers	registers;
 	bool					keypad[CHIP8_KEYS];
+	bool					draw;
 };
 
 /* ---------------------------------------------------------------------------------------------------- */

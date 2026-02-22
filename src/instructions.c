@@ -9,10 +9,6 @@
 
 /* ---------------------------------------------------------------------------------------------------- */
 
-extern int g_draw;
-
-/* ---------------------------------------------------------------------------------------------------- */
-
 static uint16_t memory_get_instruction(struct chip8 *chip8)
 {
 	uint16_t instruction;
@@ -54,7 +50,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 		case 0x00e0: // 00E0 - CLS
 
 			display_clear(&chip8->display);
-			g_draw = true;
+			chip8->draw = true;
 
 			printf("Clear the display\n");
 			break;
@@ -268,7 +264,7 @@ void chip8_instruction_exec(struct chip8 *chip8)
 
 					printf("Display 0x%x-byte sprite starting at location I (0x%04x) at (V[0x%x] (0x%02x), V[0x%x] (0x%02x)), set VF = collision\n", n, chip8->registers.I, x, chip8->registers.V[x], y, chip8->registers.V[y]);
 
-					g_draw = true;
+					chip8->draw = true;
 					break;
 
 				case 0xe000: // E***

@@ -20,10 +20,6 @@ static void update_timers(struct chip8 *chip8);
 
 /* ---------------------------------------------------------------------------------------------------- */
 
-int g_draw = false;
-
-/* ---------------------------------------------------------------------------------------------------- */
-
 int main(int argc, char **argv)
 {
 	const char *rom_name = argv[1];
@@ -66,10 +62,10 @@ int main(int argc, char **argv)
 
 		SDL_SetRenderDrawColor(sdl.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-		if (g_draw)
+		if (chip8.draw)
 		{
 			draw(sdl.renderer, &chip8.display);
-			g_draw = false;
+			chip8.draw = false;
 		}
 
 		update_timers(&chip8);
