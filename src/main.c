@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 
 		start_frame_time = SDL_GetPerformanceCounter();
 
-		// for (i = 0; i < INSTRUCTIONS_PER_FRAME / 60; ++i)
+		for (i = 0; i < INSTRUCTIONS_PER_FRAME / 60; ++i)
 		{
 			chip8_instruction_exec(&chip8);
 		}
@@ -69,15 +69,13 @@ int main(int argc, char **argv)
 		if (g_draw)
 		{
 			draw(sdl.renderer, &chip8.display);
-
 			g_draw = false;
 		}
 
 		update_timers(&chip8);
 
 		SDL_RenderPresent(sdl.renderer);
-		// SDL_Delay(16.67f > time_elapsed ? 16.67f - time_elapsed : 0);
-		SDL_Delay(60);
+		SDL_Delay(16.67f > time_elapsed ? 16.67f - time_elapsed : 0);
 	}
 
 	return 0;
