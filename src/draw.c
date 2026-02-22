@@ -12,6 +12,8 @@ void draw(SDL_Renderer *renderer, struct chip8_display *display)
 	pixel.w = CHIP8_PIXEL_SCALE;
 	pixel.h = CHIP8_PIXEL_SCALE;
 
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
 	for (y = 0; y < CHIP8_WINDOW_HEIGHT; ++y)
 	{
 		for (x = 0; x < CHIP8_WINDOW_WIDTH; ++x)

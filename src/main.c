@@ -16,15 +16,10 @@
 
 /* ---------------------------------------------------------------------------------------------------- */
 
+static void clear_screen(SDL_Renderer *renderer);
 static void update_timers(struct chip8 *chip8);
 
 /* ---------------------------------------------------------------------------------------------------- */
-
-static void clear_screen(SDL_Renderer *renderer)
-{
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-	SDL_RenderClear(renderer);
-}
 
 int main(int argc, char **argv)
 {
@@ -65,8 +60,6 @@ int main(int argc, char **argv)
 		if (chip8.draw)
 		{
 			clear_screen(sdl.renderer);
-
-			SDL_SetRenderDrawColor(sdl.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 			draw(sdl.renderer, &chip8.display);
 
 			chip8.draw = false;
@@ -82,6 +75,12 @@ int main(int argc, char **argv)
 }
 
 /* ---------------------------------------------------------------------------------------------------- */
+
+static void clear_screen(SDL_Renderer *renderer)
+{
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	SDL_RenderClear(renderer);
+}
 
 static void update_timers(struct chip8 *chip8)
 {
