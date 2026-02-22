@@ -20,6 +20,12 @@ static void update_timers(struct chip8 *chip8);
 
 /* ---------------------------------------------------------------------------------------------------- */
 
+static void clear_screen(SDL_Renderer *renderer)
+{
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	SDL_RenderClear(renderer);
+}
+
 int main(int argc, char **argv)
 {
 	const char *rom_name = argv[1];
@@ -35,8 +41,7 @@ int main(int argc, char **argv)
 	init_chip8(&chip8);
 	load_chip8(&chip8, rom_name);
 
-	// SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-	// SDL_RenderClear(sdl.renderer);
+	clear_screen(sdl.renderer);
 
 	uint64_t start_frame_time, end_frame_time;
 	double time_elapsed;
@@ -44,9 +49,6 @@ int main(int argc, char **argv)
 
 	while (1)
 	{
-		SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-		SDL_RenderClear(sdl.renderer);
-
 		input(&chip8);
 
 		start_frame_time = SDL_GetPerformanceCounter();
@@ -60,11 +62,13 @@ int main(int argc, char **argv)
 
 		time_elapsed = (double)((end_frame_time - start_frame_time) / 1000) / SDL_GetPerformanceFrequency();
 
-		SDL_SetRenderDrawColor(sdl.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-
 		if (chip8.draw)
 		{
+			clear_screen(sdl.renderer);
+
+			SDL_SetRenderDrawColor(sdl.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 			draw(sdl.renderer, &chip8.display);
+
 			chip8.draw = false;
 		}
 
